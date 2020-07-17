@@ -54,6 +54,7 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
                     new Claim(EnumPermissions.Perm2.ToString(), true.ToString())
                     };
 
+
                 //generate new token 
                 var newToken = _authTokenService.GenerateToken(claims, configKey, Convert.ToInt32(configTime));
 
