@@ -150,15 +150,16 @@ namespace Api.Web
 
             app.UseResponseCompression();
 
+            app.UseCors(option => option
+                           .AllowAnyOrigin()
+                           .AllowAnyHeader());
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             //app.UseCors(MyAllowSpecificOrigins);
-            app.UseCors(option => option
-                            .AllowAnyOrigin()
-                            .AllowAnyHeader());
-
+           
             app.UseAuthentication();
 
             app.UseAuthorization();

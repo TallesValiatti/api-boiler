@@ -31,10 +31,9 @@ namespace Api.Web.Controllers.Security
 
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin2")]
         public async Task<IActionResult> TesteLoginAuth()
         {
-            throw new Exception("Foi um erro");
             return Ok("teste");
         }
     }
