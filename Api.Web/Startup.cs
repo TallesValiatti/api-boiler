@@ -36,7 +36,6 @@ namespace Api.Web
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "AllowAllOrigins";
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -130,14 +129,11 @@ namespace Api.Web
             };
             });
 
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy(MyAllowSpecificOrigins,
-            //        builder => builder.AllowAnyOrigin());
-            //});
-
             //Configure global exception middleware 
             services.AddGlobalExceptionHandlerMiddleware();
+
+            ////HealthCheck setup
+            services.AddHealthCheck(connectionString, Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -159,17 +155,18 @@ namespace Api.Web
 
             app.UseRouting();
 
-            //app.UseCors(MyAllowSpecificOrigins);
-           
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseHealthCheck();
 
             app.UseGlobalExceptionHandlerMiddleware();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecksUI();
             });
         }
 

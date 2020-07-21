@@ -40,9 +40,10 @@ namespace Api.Web.Controllers.Security
 
 
         [HttpGet]
-        [Authorize(Roles = "Admin2")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> TesteLoginAuth()
         {
+            throw new Exception("Erro ao processar dados TesteLoginAuth");
             return Ok("teste");
         }
     }
