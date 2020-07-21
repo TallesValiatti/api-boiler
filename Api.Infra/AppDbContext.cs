@@ -27,6 +27,7 @@ namespace Api.Infra
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfiguration(new UserModelConfiguration(_passwordService,_configuration));
+            modelBuilder.ApplyConfiguration(new SignInRegisterModelConfiguration(_passwordService,_configuration));
         }
     }
 }

@@ -42,13 +42,14 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
 
                 //Values from appSettings
                 var configKey = _configuration.GetSection("Settings:AuthToken:Key").Value;
+                var configRefreshKey = _configuration.GetSection("Settings:AuthRefreshToken:Key").Value;
                 var configTime = _configuration.GetSection("Settings:AuthToken:ExpirationTime").Value;
 
                 //Claims
                 var claims = new Claim[]
                     {
-                    new Claim(ClaimTypes.Name, command.Request.Name),
-                    new Claim(ClaimTypes.Email, command.Request.Email),
+                    new Claim("Name", command.Request.Name),
+                    new Claim("Email", command.Request.Email),
                     new Claim(ClaimTypes.Role, "Admin"),
                     //new Claim(EnumPermissions.Perm1.ToString(), true.ToString()),
                     new Claim(EnumPermissions.Perm2.ToString(), true.ToString())
@@ -57,11 +58,14 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
 
                 //generate new token 
                 var newToken = _authTokenService.GenerateToken(claims, configKey, Convert.ToInt32(configTime));
+                var newRefreshToken = _authTokenService.GenerateRefresToken(configRefreshKey);
+
 
                 //add the value of the returned object
                 var response = new CreateLoginResponse
                 {
-                    Token = newToken
+                    Token = newToken,
+                    RefreshToken = newRefreshToken
                 };
 
                 result.Value = response;

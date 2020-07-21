@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Api.Core.Dto.Requests.Validators
 {
-    public class CreateLoginRequestValidator : AbstractValidator<CreateLoginRequest>
+    public class CreateRefreshLoginRequestValidator : AbstractValidator<CreateRefreshLoginRequest>
     {
-        public CreateLoginRequestValidator()
+        public CreateRefreshLoginRequestValidator()
         {
             RuleFor(x => x.Email)
                 .NotEmpty()
@@ -19,13 +19,21 @@ namespace Api.Core.Dto.Requests.Validators
                 .NotNull()
                 .WithMessage("Email must be valid");
 
-            RuleFor(x => x.Password)
+            RuleFor(x => x.AuthToken)
                .NotEmpty()
-               .WithMessage("Password must be valid");
+               .WithMessage("AuthToken must be valid");
 
-            RuleFor(x => x.Password)
+            RuleFor(x => x.AuthToken)
                 .NotNull()
-                .WithMessage("Password must be valid");
+                .WithMessage("AuthToken must be valid");
+
+            RuleFor(x => x.AuthRefreshToken)
+               .NotEmpty()
+               .WithMessage("AuthRefreshToken must be valid");
+
+            RuleFor(x => x.AuthRefreshToken)
+                .NotNull()
+                .WithMessage("AuthRefreshToken must be valid");
 
             RuleFor(x => x.SignInType)
                 .IsInEnum()

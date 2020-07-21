@@ -8,5 +8,6 @@ namespace Api.Core.Interfaces.CrossCutting.Services
     public interface IAuthTokenService
     {
         string GenerateToken(Claim[] claims, string key, int time);
+        string GenerateRefresToken(string key);
     }
 }

@@ -67,6 +67,7 @@ namespace Api.Web
             services.AddScoped<AppDbContext>();
             services.AddScoped(typeof(IGenerericRepository<>), typeof(Api.Infra.Repositories.GenericRepository<>));
             services.AddScoped<IUserRepository<User>, Api.Infra.Repositories.Security.UserRepository>();
+            services.AddScoped<ISignInRegisterRepository<SignInRegister>, Api.Infra.Repositories.Security.SignInRegisterRepository>();
             #endregion
 
             //connection String

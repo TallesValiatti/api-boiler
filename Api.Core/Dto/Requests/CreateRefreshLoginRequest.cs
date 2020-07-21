@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Api.Core.Dto.Requests
 {
-    public class CreateLoginRequest
+    public class CreateRefreshLoginRequest
     {
+        public string AuthToken { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+        public string AuthRefreshToken { get; set; }
         public EnumSignInType SignInType { get; set; }
     }
 }

@@ -10,6 +10,18 @@ namespace Api.CrossCutting.Services
 {
     public class AuthTokenService : IAuthTokenService
     {
+        public string GenerateRefresToken(string key)
+        {
+            Random rnd = new Random();
+            string characters = key;
+            StringBuilder result = new StringBuilder(15);
+            for (int i = 0; i < 15; i++)
+            {
+                result.Append(characters[rnd.Next(characters.Length)]);
+            }
+            return result.ToString();
+        }
+
         public string GenerateToken(Claim[] claims, string key, int time)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

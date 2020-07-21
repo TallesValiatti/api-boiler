@@ -1,5 +1,6 @@
 ﻿using Api.Core.Dto.Responses;
 using Api.Core.Entities.Security;
+using Api.Core.Enums.Security;
 using Api.Core.Interfaces.CrossCutting.Services;
 using Api.Core.Interfaces.Infra.Repositories.Security;
 using MediatR;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Api.Core.Tasks.Commands.Security.Handlers
 {
-    class CreateLoginCommandHandler : IRequestHandler<CreateLoginCommand, ResultTask<CreateLoginResponse>>
+    class CreateRefreshLoginCommandHandler : IRequestHandler<CreateRefreshLoginCommand, ResultTask<CreateLoginResponse>>
     {
         private readonly IPasswordService _passwordService;
         private readonly IConfiguration _configuration;
@@ -19,7 +20,7 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
         private readonly IUserRepository<User> _userRepository;
         private readonly ISignInRegisterRepository<SignInRegister> _signInRegisterRepository;
 
-        public CreateLoginCommandHandler(
+        public CreateRefreshLoginCommandHandler(
             IPasswordService passwordService,
             IUserRepository<User> userRepository,
             IMediator mediator,
@@ -32,7 +33,7 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
             _signInRegisterRepository = signInRegisterRepository;
             _userRepository = userRepository;
         }
-        public async Task<ResultTask<CreateLoginResponse>> Handle(CreateLoginCommand command, CancellationToken cancellationToken)
+        public async Task<ResultTask<CreateLoginResponse>> Handle(CreateRefreshLoginCommand command, CancellationToken cancellationToken)
         {
             try
             {
@@ -48,11 +49,29 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
                     return result;
                 }
 
-                //verify the password
-                var verifiedPassword = _passwordService.ValidatePassword(command.Request.Password, _configuration.GetSection("Settings:PasswordHashKey").Value, entity.PasswordHash);
-                if (!verifiedPassword)
+                //verify the refresh token
+                var lastSignIn = await _signInRegisterRepository.GetLastSignInByUserAsync(entity.Id, command.Request.SignInType);
+                if (lastSignIn == null)
                 {
-                    result.WithError("Invalid credentials");
+                    result.WithError("Invalid request");
+                    return result;
+                }
+
+                if (string.Compare(lastSignIn.AuthRefreshToken, command.Request.AuthRefreshToken) != 0)
+                {
+                    result.WithError("Invalid request");
+                    return result;
+                }
+
+                if (string.Compare(lastSignIn.AuthToken, command.Request.AuthToken) != 0)
+                {
+                    result.WithError("Invalid request");
+                    return result;
+                }
+
+                if (DateTime.UtcNow >= lastSignIn.AuthRefreshTokenValidation)
+                {
+                    result.WithError("Invalid request");
                     return result;
                 }
 
@@ -63,7 +82,7 @@ namespace Api.Core.Tasks.Commands.Security.Handlers
                 var dateNow = DateTime.UtcNow;
                 var expirationTime = _configuration.GetSection("Settings:AuthRefreshToken:ExpirationTime").Value;
                 var expirationTimeInt = Convert.ToInt32(expirationTime, CultureInfo.InvariantCulture);
-                
+               
                 //create signIn register
                 await _signInRegisterRepository.AddAsync(new SignInRegister
                 {

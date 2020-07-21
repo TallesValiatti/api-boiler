@@ -29,6 +29,15 @@ namespace Api.Web.Controllers.Security
             return Ok(result);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("Refresh")]
+        public async Task<IActionResult> RefreshLogin([FromBody] CreateRefreshLoginRequest request)
+        {
+            var result = await _mediator.Send(new CreateRefreshLoginCommand(request));
+            return Ok(result);
+        }
+
 
         [HttpGet]
         [Authorize(Roles = "Admin2")]
